@@ -25,22 +25,7 @@
  *    may be used to endorse or promote products derived from this
  *    software without specific prior written permission.
  *
- * ALTERNATIVELY, provided that this notice is retained in full, this
- * product may be distributed under the terms of the GNU General Public
- * License (GPL) version 2 or later, in which case the provisions
- * of the GPL apply INSTEAD OF those given above.
  *
- * This software is provided ``as is'', and any express or implied
- * warranties, including, but not limited to, the implied warranties of
- * merchantability and fitness for a particular purpose are disclaimed.
- * In no event shall the company or contributors be liable for any
- * direct, indirect, incidental, special, exemplary, or consequential
- * damages (including, but not limited to, procurement of substitute
- * goods or services; loss of use, data, or profits; or business
- * interruption) however caused and on any theory of liability, whether
- * in contract, strict liability, or tort (including negligence or
- * otherwise) arising in any way out of the use of this software, even
- * if advised of the possibility of such damage.
  *
  */
 
@@ -74,6 +59,7 @@ struct Packet : public Record {
    uint8_t     ip_flags;
    ipaddr_t    src_ip;
    ipaddr_t    dst_ip;
+   uint32_t    vlan_id;
 
    uint16_t    src_port;
    uint16_t    dst_port;
@@ -108,7 +94,7 @@ struct Packet : public Record {
       ts({0}),
       dst_mac(), src_mac(), ethertype(0),
       ip_len(0), ip_payload_len(0), ip_version(0), ip_ttl(0),
-      ip_proto(0), ip_tos(0), ip_flags(0), src_ip({0}), dst_ip({0}),
+      ip_proto(0), ip_tos(0), ip_flags(0), src_ip({0}), dst_ip({0}), vlan_id(0),
       src_port(0), dst_port(0), tcp_flags(0), tcp_window(0),
       tcp_options(0), tcp_mss(0), tcp_seq(0), tcp_ack(0),
       packet(nullptr), packet_len(0), packet_len_wire(0),

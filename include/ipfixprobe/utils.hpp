@@ -22,22 +22,7 @@
  *    may be used to endorse or promote products derived from this
  *    software without specific prior written permission.
  *
- * ALTERNATIVELY, provided that this notice is retained in full, this
- * product may be distributed under the terms of the GNU General Public
- * License (GPL) version 2 or later, in which case the provisions
- * of the GPL apply INSTEAD OF those given above.
  *
- * This software is provided ``as is'', and any express or implied
- * warranties, including, but not limited to, the implied warranties of
- * merchantability and fitness for a particular purpose are disclaimed.
- * In no event shall the company or contributors be liable for any
- * direct, indirect, incidental, special, exemplary, or consequential
- * damages (including, but not limited to, procurement of substitute
- * goods or services; loss of use, data, or profits; or business
- * interruption) however caused and on any theory of liability, whether
- * in contract, strict liability, or tort (including negligence or
- * otherwise) arising in any way out of the use of this software, even
- * if advised of the possibility of such damage.
  *
  */
 
@@ -52,6 +37,7 @@
 #include <utility>
 #include <algorithm>
 #include <stdexcept>
+#include <cstdint>
 
 namespace ipxp {
 
@@ -160,5 +146,11 @@ T str2num(std::string str, typename std::enable_if<is_uint<T>()>::type * = nullp
    return static_cast<T>(tmp);
 }
 
+/**
+ * @brief Convert struct Timeval to microseconds
+ */
+uint64_t timeval2usec(const struct timeval& tv);
+
 }
+
 #endif /* IPXP_UTILS_HPP */

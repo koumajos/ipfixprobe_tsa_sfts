@@ -1,3 +1,28 @@
+2023-07-21 ipfixprobe-4.9.2
+	* NetTiSA: Fix time comparison, handle Nan values
+
+2023-07-18 ipfixprobe-4.9.1
+	* NetTiSA: Add new NetTisa process plugin
+	* OVPN: Imporovments (Added rtp header validation function, Improve detection)
+	* HTTP: Add parsing HTTP response headers server and set-cookie names
+	* ICMP: Add new ICMP process plugin
+	* Code format: Changing uncrustify to clang format
+
+2023-06-01 ipfixprobe-4.9.0
+	* flow cache: add VLAN ID to the flow key
+	* SSADetector: detect SYN-SYNACK-ACK sequence to detect VPN within exiting connection
+	* ovpn: enhanced algorithm to minimize false positives
+	* optimization: do not export some additional info for short flows
+	* dpdk: allow running as a secondary DPDK process, reading from mring
+	* dpdk: allow reading from multiple port of the network interface
+	* init: improve config & service to set `lcores`
+
+2023-05-16 ipfixprobe-4.8.0
+	* DPDK: bugfix of HW timestamps
+	* DPDK: compliance, different constant names
+	* pstats: bugfix of recognition of zero length packets
+	* SSADetector: add new plugin to detect possible SYN-SYNACK-ACK
+
 2023-03-27 ipfixprobe-4.7.4
 	* Support parsing of ipv6 mobility header
 	* Support TLS v1.3

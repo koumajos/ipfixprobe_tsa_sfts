@@ -45,8 +45,8 @@ m4/ltsugar.m4
 m4/ltversion.m4
 m4/lt~obsolete.m4
 
-# Generated Makefile 
-# (meta build system like autotools, 
+# Generated Makefile
+# (meta build system like autotools,
 # can automatically generate from config.status script
 # (which is called by configure script))
 Makefile
@@ -94,13 +94,21 @@ libtool
 fields.c
 fields.h
 ipfixprobe-nemea.*
-./ipfixprobe
+ipfixprobe
+ipfixprobe_stats
 ipfixprobe-*.tar.gz
 
 # Test Outputs
-tests/*.log
-tests/*.trs
+tests/*/*.log
+tests/*/*.trs
 tests/output/
+tests/functional/output
+# Unit test binaries
+tests/unit/byte_utils
+tests/unit/flowifc
+tests/unit/options
+tests/unit/unirec
+tests/unit/utils
 
 # Mac Finder metafile
 **/.DS_Store

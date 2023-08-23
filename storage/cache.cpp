@@ -26,22 +26,7 @@
  *    may be used to endorse or promote products derived from this
  *    software without specific prior written permission.
  *
- * ALTERNATIVELY, provided that this notice is retained in full, this
- * product may be distributed under the terms of the GNU General Public
- * License (GPL) version 2 or later, in which case the provisions
- * of the GPL apply INSTEAD OF those given above.
  *
- * This software is provided ``as is'', and any express or implied
- * warranties, including, but not limited to, the implied warranties of
- * merchantability and fitness for a particular purpose are disclaimed.
- * In no event shall the company or contributors be liable for any
- * direct, indirect, incidental, special, exemplary, or consequential
- * damages (including, but not limited to, procurement of substitute
- * goods or services; loss of use, data, or profits; or business
- * interruption) however caused and on any theory of liability, whether
- * in contract, strict liability, or tort (including negligence or
- * otherwise) arising in any way out of the use of this software, even
- * if advised of the possibility of such damage.
  *
  */
 
@@ -122,6 +107,7 @@ void FlowRecord::create(const Packet &pkt, uint64_t hash)
 
    m_flow.time_first = pkt.ts;
    m_flow.time_last = pkt.ts;
+   m_flow.flow_hash = hash;
 
    memcpy(m_flow.src_mac, pkt.src_mac, 6);
    memcpy(m_flow.dst_mac, pkt.dst_mac, 6);
@@ -507,6 +493,7 @@ bool NHTFlowCache::create_hash_key(Packet &pkt)
       key_v4->dst_port = pkt.dst_port;
       key_v4->src_ip = pkt.src_ip.v4;
       key_v4->dst_ip = pkt.dst_ip.v4;
+      key_v4->vlan_id = pkt.vlan_id;
 
       key_v4_inv->proto = pkt.ip_proto;
       key_v4_inv->ip_version = IP::v4;
@@ -514,6 +501,7 @@ bool NHTFlowCache::create_hash_key(Packet &pkt)
       key_v4_inv->dst_port = pkt.src_port;
       key_v4_inv->src_ip = pkt.dst_ip.v4;
       key_v4_inv->dst_ip = pkt.src_ip.v4;
+      key_v4_inv->vlan_id = pkt.vlan_id;
 
       m_keylen = sizeof(flow_key_v4_t);
       return true;
@@ -527,6 +515,7 @@ bool NHTFlowCache::create_hash_key(Packet &pkt)
       key_v6->dst_port = pkt.dst_port;
       memcpy(key_v6->src_ip, pkt.src_ip.v6, sizeof(pkt.src_ip.v6));
       memcpy(key_v6->dst_ip, pkt.dst_ip.v6, sizeof(pkt.dst_ip.v6));
+      key_v6->vlan_id = pkt.vlan_id;
 
       key_v6_inv->proto = pkt.ip_proto;
       key_v6_inv->ip_version = IP::v6;
@@ -534,6 +523,7 @@ bool NHTFlowCache::create_hash_key(Packet &pkt)
       key_v6_inv->dst_port = pkt.src_port;
       memcpy(key_v6_inv->src_ip, pkt.dst_ip.v6, sizeof(pkt.dst_ip.v6));
       memcpy(key_v6_inv->dst_ip, pkt.src_ip.v6, sizeof(pkt.src_ip.v6));
+      key_v6_inv->vlan_id = pkt.vlan_id;
 
       m_keylen = sizeof(flow_key_v6_t);
       return true;

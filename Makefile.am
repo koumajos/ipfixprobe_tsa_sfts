@@ -126,14 +126,22 @@ ipfixprobe_process_src=\
 		process/md5.cpp \
 		process/common.hpp \
 		process/ssadetector.hpp \
-		process/ssadetector.cpp
+		process/ssadetector.cpp \
+		process/icmp.hpp \
+		process/icmp.cpp \
+		process/vlan.hpp \
+		process/vlan.cpp \
+		process/nettisa.hpp \
+		process/nettisa.cpp \
+		process/flow_hash.hpp \
+		process/flow_hash.cpp
 
 if WITH_QUIC
 ipfixprobe_process_src+=\
 		process/quic.hpp \
 		process/quic.cpp \
 		process/quic_parser.cpp \
-		process/quic_parser.hpp 
+		process/quic_parser.hpp
 
 endif
 
@@ -163,8 +171,14 @@ endif
 
 if WITH_DPDK
 ipfixprobe_input_src+=\
+		input/dpdk/dpdkMbuf.hpp \
+		input/dpdk/dpdkMbuf.cpp \
+		input/dpdk/dpdkDevice.hpp \
+		input/dpdk/dpdkDevice.cpp \
         input/dpdk.cpp \
-        input/dpdk.h
+        input/dpdk.h \
+	input/dpdk-ring.cpp \
+	input/dpdk-ring.h
 endif
 
 ipfixprobe_headers_src=\
@@ -181,7 +195,8 @@ ipfixprobe_headers_src=\
 		include/ipfixprobe/packet.hpp \
 		include/ipfixprobe/ring.h \
 		include/ipfixprobe/byte-utils.hpp \
-		include/ipfixprobe/ipfix-elements.hpp
+		include/ipfixprobe/ipfix-elements.hpp \
+		include/ipfixprobe/rtp.hpp
 
 ipfixprobe_src=\
 		$(ipfixprobe_input_src) \

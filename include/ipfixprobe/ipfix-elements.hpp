@@ -23,22 +23,7 @@
  *    may be used to endorse or promote products derived from this
  *    software without specific prior written permission.
  *
- * ALTERNATIVELY, provided that this notice is retained in full, this
- * product may be distributed under the terms of the GNU General Public
- * License (GPL) version 2 or later, in which case the provisions
- * of the GPL apply INSTEAD OF those given above.
  *
- * This software is provided ``as is'', and any express or implied
- * warranties, including, but not limited to, the implied warranties of
- * merchantability and fitness for a particular purpose are disclaimed.
- * In no event shall the company or contributors be liable for any
- * direct, indirect, incidental, special, exemplary, or consequential
- * damages (including, but not limited to, procurement of substitute
- * goods or services; loss of use, data, or profits; or business
- * interruption) however caused and on any theory of liability, whether
- * in contract, strict liability, or tort (including negligence or
- * otherwise) arising in any way out of the use of this software, even
- * if advised of the possibility of such damage.
  *
  */
 
@@ -95,8 +80,11 @@ namespace ipxp {
 #define INPUT_INTERFACE(F)            F(0,       10,    4,   &this->dir_bit_field)
 #define OUTPUT_INTERFACE(F)           F(0,       14,    2,   nullptr)
 #define FLOW_END_REASON(F)            F(0,      136,    1,   &flow.end_reason)
+#define FLOW_ID(F)                    F(0,      148,    8,   &flow.flow_hash)
 
 #define ETHERTYPE(F)                  F(0,      256,    2,   nullptr)
+
+#define VLAN_ID(F)                    F(0,       58,    2,   nullptr)
 
 #define L2_SRC_MAC(F)                 F(0,       56,    6,   flow.src_mac)
 #define L2_DST_MAC(F)                 F(0,       80,    6,   flow.dst_mac)
@@ -139,6 +127,8 @@ namespace ipxp {
 #define HTTP_STATUS(F)                F(39499,   12,    2,   nullptr)
 #define HTTP_USERAGENT(F)             F(39499,   20,   -1,   nullptr)
 #define HTTP_METHOD(F)                F(8057,   200,   -1,   nullptr)
+#define HTTP_SERVER(F)                F(8057,   201,   -1,   nullptr)
+#define HTTP_SET_COOKIE_NAMES(F)      F(8057,   202,   -1,   nullptr)
 
 #define RTSP_METHOD(F)                F(16982,  600,   -1,   nullptr)
 #define RTSP_USERAGENT(F)             F(16982,  601,   -1,   nullptr)
@@ -274,65 +264,80 @@ namespace ipxp {
 #define WG_DST_PEER(F)                F(8057,    1102,   4,   nullptr)
 
 //timeseries plugin
-#define    TS_MEAN(F)    F(4668 , 900 , 4 , nullptr)
-#define    TS_STDEV(F)    F(4668 , 901 , 4 , nullptr)
-#define    TS_VAR(F)    F(4668 , 902 , 4 , nullptr)
-#define    TS_BURSTINESS(F)    F(4668 , 903 , 4 , nullptr)
-#define    TS_Q1(F)    F(4668 , 904 , 2 , nullptr)
-#define    TS_MEDIAN(F)    F(4668 , 905 , 2 , nullptr)
-#define    TS_Q3(F)    F(4668 , 906 , 2 , nullptr)
-#define    TS_MIN(F)    F(4668 , 907 , 2 , nullptr)
-#define    TS_MAX(F)    F(4668 , 908 , 2 , nullptr)
-#define    TS_MODE(F)    F(4668 , 909 , 2 , nullptr)
-#define    TS_COEFFICIENT_OF_VARIATION(F)    F(4668 , 910 , 4 , nullptr)
-#define    TS_AVERAGE_DISPERSION(F)    F(4668 , 911 , 4 , nullptr)
-#define    TS_PERCENT_DEVIATION(F)    F(4668 , 912 , 4 , nullptr)
-#define    TS_ROOT_MEAN_SQUARE(F)    F(4668 , 913 , 4 , nullptr)
-#define    TS_PERCENT_BELOW_MEAN(F)    F(4668 , 914 , 4 , nullptr)
-#define    TS_PERCENT_ABOVE_MEAN(F)    F(4668 , 915 , 4 , nullptr)
-#define    TS_PEARSON_SK1_SKEWNESS(F)    F(4668 , 916 , 4 , nullptr)
-#define    TS_PEARSON_SK2_SKEWNESS(F)    F(4668 , 917 , 4 , nullptr)
-#define    TS_FISHER_MI_3_SKEWNESS(F)    F(4668 , 918 , 4 , nullptr)
-#define    TS_GALTON_SKEWNESS(F)    F(4668 , 919 , 4 , nullptr)
-#define    TS_KURTOSIS(F)    F(4668 , 920 , 4 , nullptr)
-#define    TS_ENTROPY(F)    F(4668 , 921 , 4 , nullptr)
-#define    TS_SCALED_ENTROPY(F)    F(4668 , 922 , 4 , nullptr)
-#define    TS_P_BENFORD(F)    F(4668 , 923 , 4 , nullptr)
-#define    TS_MEAN_SCALED_TIME(F)    F(4668 , 924 , 4 , nullptr)
-#define    TS_MEDIAN_SCALED_TIME(F)    F(4668 , 925 , 4 , nullptr)
-#define    TS_Q1_SCALED_TIME(F)    F(4668 , 926 , 4 , nullptr)
-#define    TS_Q3_SCALED_TIME(F)    F(4668 , 927 , 4 , nullptr)
-#define    TS_DURATION(F)    F(4668 , 928 , 4 , nullptr)
-#define    TS_MIN_DIFFTIMES(F)    F(4668 , 929 , 4 , nullptr)
-#define    TS_MAX_DIFFTIMES(F)    F(4668 , 930 , 4 , nullptr)
-#define    TS_MEAN_DIFFTIMES(F)    F(4668 , 931 , 4 , nullptr)
-#define    TS_MEDIAN_DIFFTIMES(F)    F(4668 , 932 , 4 , nullptr)
-#define    TS_DIFFTIMES_SKEWNESS(F)    F(4668 , 933 , 4 , nullptr)
-#define    TS_DIFFTIMES_KURTOSIS(F)    F(4668 , 934 , 4 , nullptr)
-#define    TS_TIME_DISTRIBUTION(F)    F(4668 , 935 , 4 , nullptr)
-#define    TS_HURST_EXPONENT(F)    F(4668 , 936 , 4 , nullptr)
-#define    TS_SWITCHING_METRIC(F)    F(4668 , 937 , 4 , nullptr)
-#define    TS_DIRECTIONS(F)    F(4668 , 938 , 4 , nullptr)
-#define    TS_PERIODICITY_TIME(F)    F(4668 , 939 , 4 , nullptr)
-#define    TS_PERIODICITY_VAL(F)    F(4668 , 940 , 2 , nullptr)
-#define    TS_MIN_POWER(F)    F(4668 , 941 , 4 , nullptr)
-#define    TS_MAX_POWER(F)    F(4668 , 942 , 4 , nullptr)
-#define    TS_MIN_POWER_FREQ(F)    F(4668 , 943 , 4 , nullptr)
-#define    TS_MAX_POWER_FREQ(F)    F(4668 , 944 , 4 , nullptr)
-#define    TS_SPECTRAL_ENERGY(F)    F(4668 , 945 , 4 , nullptr)
-#define    TS_SPECTRAL_ENTROPY(F)    F(4668 , 946 , 4 , nullptr)
-#define    TS_SPECTRAL_KURTOSIS(F)    F(4668 , 947 , 4 , nullptr)
-#define    TS_SPECTRAL_SKEWNESS(F)    F(4668 , 948 , 4 , nullptr)
-#define    TS_SPECTRAL_ROLLOFF(F)    F(4668 , 949 , 4 , nullptr)
-#define    TS_SPECTRAL_CENTROID(F)    F(4668 , 950 , 4 , nullptr)
-#define    TS_SPECTRAL_SPREAD(F)    F(4668 , 951 , 4 , nullptr)
-#define    TS_SPECTRAL_SLOPE(F)    F(4668 , 952 , 4 , nullptr)
-#define    TS_SPECTRAL_CREST(F)    F(4668 , 953 , 4 , nullptr)
-#define    TS_SPECTRAL_FLUX(F)    F(4668 , 954 , 4 , nullptr)
-#define    TS_SPECTRAL_BANDWIDTH(F)    F(4668 , 955 , 4 , nullptr)
-#define    TS_POWER_MEAN(F)    F(4668 , 956 , 4 , nullptr)
-#define    TS_POWER_STD(F)    F(4668 , 957 , 4 , nullptr)
-#define    TS_PERIODICITY_SCDF(F)    F(4668 , 958 , 4 , nullptr)
+#define TS_MEAN(F)			F(4668,	900,	4,	nullptr)
+#define TS_STDEV(F)			F(4668,	901,	4,	nullptr)
+#define TS_VAR(F)			F(4668,	902,	4,	nullptr)
+#define TS_BURSTINESS(F)		F(4668,	903,	4,	nullptr)
+#define TS_Q1(F)			F(4668,	904,	2,	nullptr)
+#define TS_MEDIAN(F)			F(4668,	905,	2,	nullptr)
+#define TS_Q3(F)			F(4668,	906,	2,	nullptr)
+#define TS_MIN(F)			F(4668,	907,	2,	nullptr)
+#define TS_MAX(F)			F(4668,	908,	2,	nullptr)
+#define TS_MODE(F)			F(4668,	909,	2,	nullptr)
+#define TS_COEFFICIENT_OF_VARIATION(F)	F(4668,	910,	4,	nullptr)
+#define TS_AVERAGE_DISPERSION(F)	F(4668,	911,	4,	nullptr)
+#define TS_PERCENT_DEVIATION(F)	  	F(4668,	912,	4,	nullptr)
+#define TS_ROOT_MEAN_SQUARE(F)	  	F(4668,	913,	4,	nullptr)
+#define TS_PERCENT_BELOW_MEAN(F)  	F(4668,	914,	4,	nullptr)
+#define TS_PERCENT_ABOVE_MEAN(F)  	F(4668,	915,	4,	nullptr)
+#define TS_PEARSON_SK1_SKEWNESS(F)	F(4668,	916,	4,	nullptr)
+#define TS_PEARSON_SK2_SKEWNESS(F)	F(4668,	917,	4,	nullptr)
+#define TS_FISHER_MI_3_SKEWNESS(F)	F(4668,	918,	4,	nullptr)
+#define TS_GALTON_SKEWNESS(F)		F(4668,	919,	4,	nullptr)
+#define TS_KURTOSIS(F)			F(4668,	920,	4,	nullptr)
+#define TS_ENTROPY(F)			F(4668,	921,	4,	nullptr)
+#define TS_SCALED_ENTROPY(F)		F(4668,	922,	4,	nullptr)
+#define TS_P_BENFORD(F)			F(4668,	923,	4,	nullptr)
+#define TS_MEAN_SCALED_TIME(F)		F(4668,	924,	4,	nullptr)
+#define TS_MEDIAN_SCALED_TIME(F)	F(4668,	925,	4,	nullptr)
+#define TS_Q1_SCALED_TIME(F)		F(4668,	926,	4,	nullptr)
+#define TS_Q3_SCALED_TIME(F)		F(4668,	927,	4,	nullptr)
+#define TS_DURATION(F)			F(4668,	928,	4,	nullptr)
+#define TS_MIN_DIFFTIMES(F)		F(4668,	929,	4,	nullptr)
+#define TS_MAX_DIFFTIMES(F)		F(4668,	930,	4,	nullptr)
+#define TS_MEAN_DIFFTIMES(F)		F(4668,	931,	4,	nullptr)
+#define TS_MEDIAN_DIFFTIMES(F)		F(4668,	932,	4,	nullptr)
+#define TS_DIFFTIMES_SKEWNESS(F)	F(4668,	933,	4,	nullptr)
+#define TS_DIFFTIMES_KURTOSIS(F)	F(4668,	934,	4,	nullptr)
+#define TS_TIME_DISTRIBUTION(F)		F(4668,	935,	4,	nullptr)
+#define TS_HURST_EXPONENT(F)		F(4668,	936,	4,	nullptr)
+#define TS_SWITCHING_METRIC(F)		F(4668,	937,	4,	nullptr)
+#define TS_DIRECTIONS(F)		F(4668,	938,	4,	nullptr)
+#define TS_PERIODICITY_TIME(F)		F(4668,	939,	4,	nullptr)
+#define TS_PERIODICITY_VAL(F)		F(4668,	940,	2,	nullptr)
+#define TS_MIN_POWER(F)			F(4668,	941,	4,	nullptr)
+#define TS_MAX_POWER(F)			F(4668,	942,	4,	nullptr)
+#define TS_MIN_POWER_FREQ(F)		F(4668,	943,	4,	nullptr)
+#define TS_MAX_POWER_FREQ(F)		F(4668,	944,	4,	nullptr)
+#define TS_SPECTRAL_ENERGY(F)		F(4668,	945,	4,	nullptr)
+#define TS_SPECTRAL_ENTROPY(F)		F(4668,	946,	4,	nullptr)
+#define TS_SPECTRAL_KURTOSIS(F)		F(4668,	947,	4,	nullptr)
+#define TS_SPECTRAL_SKEWNESS(F)		F(4668,	948,	4,	nullptr)
+#define TS_SPECTRAL_ROLLOFF(F)		F(4668,	949,	4,	nullptr)
+#define TS_SPECTRAL_CENTROID(F)		F(4668,	950,	4,	nullptr)
+#define TS_SPECTRAL_SPREAD(F)		F(4668,	951,	4,	nullptr)
+#define TS_SPECTRAL_SLOPE(F)		F(4668,	952,	4,	nullptr)
+#define TS_SPECTRAL_CREST(F)		F(4668,	953,	4,	nullptr)
+#define TS_SPECTRAL_FLUX(F)		F(4668,	954,	4,	nullptr)
+#define TS_SPECTRAL_BANDWIDTH(F)	F(4668,	955,	4,	nullptr)
+#define TS_POWER_MEAN(F)		F(4668,	956,	4,	nullptr)
+#define TS_POWER_STD(F)			F(4668,	957,	4,	nullptr)
+#define TS_PERIODICITY_SCDF(F)		F(4668,	958,	4,	nullptr)
+
+#define NTS_MEAN(F)                   F(8057,    1020,  4,    nullptr)
+#define NTS_MIN(F)                    F(8057,    1021,  2,    nullptr)
+#define NTS_MAX(F)                    F(8057,    1022,  2,    nullptr)
+#define NTS_STDEV(F)                  F(8057,    1023,  4,    nullptr)
+#define NTS_KURTOSIS(F)               F(8057,    1024,  4,    nullptr)
+#define NTS_ROOT_MEAN_SQUARE(F)       F(8057,    1025,  4,    nullptr)
+#define NTS_AVERAGE_DISPERSION(F)     F(8057,    1026,  4,    nullptr)
+#define NTS_MEAN_SCALED_TIME(F)       F(8057,    1027,  4,    nullptr)
+#define NTS_MEAN_DIFFTIMES(F)         F(8057,    1028,  4,    nullptr)
+#define NTS_MIN_DIFFTIMES(F)          F(8057,    1029,  4,    nullptr)
+#define NTS_MAX_DIFFTIMES(F)          F(8057,    1030,  4,    nullptr)
+#define NTS_TIME_DISTRIBUTION(F)      F(8057,    1031,  4,    nullptr)
+#define NTS_SWITCHING_RATIO(F)        F(8057,    1032,  4,    nullptr)
+
 
 /**
  * IPFIX Templates - list of elements
@@ -401,6 +406,8 @@ namespace ipxp {
    F(HTTP_REFERER) \
    F(HTTP_URI) \
    F(HTTP_CONTENT_TYPE) \
+   F(HTTP_SERVER) \
+   F(HTTP_SET_COOKIE_NAMES) \
    F(HTTP_STATUS)
 
 #define IPFIX_RTSP_TEMPLATE(F) \
@@ -563,9 +570,6 @@ namespace ipxp {
    F(OSQUERY_KERNEL_VERSION) \
    F(OSQUERY_SYSTEM_HOSTNAME)
 
-
-
-
 #define IPFIX_TIMESERIES_STATISTICS_TEMPLATE(F) \
    F(TS_MEAN) \
    F(TS_STDEV) \
@@ -633,6 +637,30 @@ namespace ipxp {
    F(TS_POWER_STD) \
    F(TS_PERIODICITY_SCDF)
 
+#define IPFIX_ICMP_TEMPLATE(F) \
+   F(L4_ICMP_TYPE_CODE)
+
+#define IPFIX_VLAN_TEMPLATE(F) \
+   F(VLAN_ID)
+
+#define IPFIX_NETTISA_TEMPLATE(F) \
+  F(NTS_MEAN) \
+  F(NTS_MIN) \
+  F(NTS_MAX) \
+  F(NTS_STDEV) \
+  F(NTS_KURTOSIS) \
+  F(NTS_ROOT_MEAN_SQUARE) \
+  F(NTS_AVERAGE_DISPERSION) \
+  F(NTS_MEAN_SCALED_TIME) \
+  F(NTS_MEAN_DIFFTIMES) \
+  F(NTS_MIN_DIFFTIMES) \
+  F(NTS_MAX_DIFFTIMES) \
+  F(NTS_TIME_DISTRIBUTION) \
+  F(NTS_SWITCHING_RATIO)
+
+
+#define IPFIX_FLOW_HASH_TEMPLATE(F) \
+   F(FLOW_ID)
 
 #ifdef WITH_FLEXPROBE
 #define IPFIX_FLEXPROBE_DATA_TEMPLATE(F) F(FX_FRAME_SIGNATURE) F(FX_INPUT_INTERFACE)
@@ -680,7 +708,10 @@ namespace ipxp {
    IPFIX_TIMESERIES_STATISTICS_TEMPLATE(F) \
    IPFIX_TIMESERIES_TIME_TEMPLATE(F) \
    IPFIX_TIMESERIES_BEHAVIOR_TEMPLATE(F) \
-   IPFIX_TIMESERIES_FREQUENCY_TEMPLATE(F)
+   IPFIX_TIMESERIES_FREQUENCY_TEMPLATE(F) \
+   IPFIX_ICMP_TEMPLATE(F) \
+   IPFIX_NETTISA_TEMPLATE(F) \
+   IPFIX_FLOW_HASH_TEMPLATE(F)
 
 /**
  * Helper macro, convert FIELD into its name as a C literal.

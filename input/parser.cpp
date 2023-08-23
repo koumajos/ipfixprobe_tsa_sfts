@@ -22,22 +22,7 @@
  *    may be used to endorse or promote products derived from this
  *    software without specific prior written permission.
  *
- * ALTERNATIVELY, provided that this notice is retained in full, this
- * product may be distributed under the terms of the GNU General Public
- * License (GPL) version 2 or later, in which case the provisions
- * of the GPL apply INSTEAD OF those given above.
  *
- * This software is provided ``as is'', and any express or implied
- * warranties, including, but not limited to, the implied warranties of
- * merchantability and fitness for a particular purpose are disclaimed.
- * In no event shall the company or contributors be liable for any
- * direct, indirect, incidental, special, exemplary, or consequential
- * damages (including, but not limited to, procurement of substitute
- * goods or services; loss of use, data, or profits; or business
- * interruption) however caused and on any theory of liability, whether
- * in contract, strict liability, or tort (including negligence or
- * otherwise) arising in any way out of the use of this software, even
- * if advised of the possibility of such damage.
  *
  */
 
@@ -103,15 +88,23 @@ inline uint16_t parse_eth_hdr(const u_char *data_ptr, uint16_t data_len, Packet 
    memcpy(pkt->dst_mac, eth->h_dest, 6);
    memcpy(pkt->src_mac, eth->h_source, 6);
 
-   if (ethertype == ETH_P_8021AD) {
+   // set the default value in case there is no VLAN ID
+   pkt->vlan_id = 0;
+
+   if (ethertype == ETH_P_8021AD || ethertype == ETH_P_8021Q) {
       if (4 > data_len - hdr_len) {
          throw "Parser detected malformed packet";
       }
-      DEBUG_CODE(uint16_t vlan = ntohs(*(uint16_t *) (data_ptr + hdr_len)));
-      DEBUG_MSG("\t802.1ad field:\n");
+
+      // only the most outer vlan id is extracted
+      uint16_t vlan = ntohs(*(uint16_t *) (data_ptr + hdr_len));
+      // VLAN ID is the 12 LSb
+      pkt->vlan_id = vlan & 0x0FFF;
+
+      DEBUG_MSG("\t%s field:\n", (ethertype == ETH_P_8021AD ? "802.1ad" : "802.1q"));
       DEBUG_MSG("\t\tPriority:\t%u\n",    ((vlan & 0xE000) >> 12));
       DEBUG_MSG("\t\tCFI:\t\t%u\n",       ((vlan & 0x1000) >> 11));
-      DEBUG_MSG("\t\tVLAN:\t\t%u\n",      (vlan & 0x0FFF));
+      DEBUG_MSG("\t\tVLAN:\t\t%u\n",      (pkt->vlan_id));
 
       hdr_len += 4;
       ethertype = ntohs(*(uint16_t *) (data_ptr + hdr_len - 2));
@@ -238,6 +231,58 @@ inline uint16_t parse_trill(const u_char *data_ptr, uint16_t data_len, Packet *p
    return sizeof(trill_hdr) + op_len_bytes;
 }
 
+inline uint16_t parse_ipv4_hdr(const u_char *data_ptr, uint16_t data_len, Packet *pkt);
+inline uint16_t parse_ipv6_hdr(const u_char *data_ptr, uint16_t data_len, Packet *pkt);
+uint16_t process_mpls(const u_char *data_ptr, uint16_t data_len, Packet *pkt);
+inline uint16_t process_pppoe(const u_char *data_ptr, uint16_t data_len, Packet *pkt);
+
+inline uint16_t parse_gre(const u_char *data_ptr, uint16_t data_len, Packet *pkt)
+{
+   int gre_len = sizeof(struct grehdr);
+   if (data_len < gre_len) {
+       throw "Parser detected malformed packet";
+   }
+
+   auto gre = (struct grehdr *)data_ptr;
+   auto flags = ntohs(gre->flags);
+   auto type = ntohs(gre->type);
+
+   // skip optional gre fields
+   if (flags & GRE_CHECKSUM) {
+      gre_len += 4;
+      DEBUG_MSG("GRE has checksum\n");
+   }
+   if (flags & GRE_KEY) {
+      gre_len += 4;
+      DEBUG_MSG("GRE has key\n");
+   }
+   if (flags & GRE_SEQNUM) {
+      gre_len += 4;
+      DEBUG_MSG("GRE has sequence number\n");
+   }
+
+   if (data_len < gre_len) {
+       throw "Parser detected malformed packet";
+   }
+
+   data_ptr += gre_len;
+   data_len -= gre_len;
+
+   switch (type) {
+   case ETH_P_IP:
+      return parse_ipv4_hdr(data_ptr, data_len, pkt) + gre_len;
+   case ETH_P_IPV6:
+      return parse_ipv6_hdr(data_ptr, data_len, pkt) + gre_len;
+   case ETH_P_MPLS_UC: case ETH_P_MPLS_MC:
+      return process_mpls(data_ptr, data_len, pkt) + gre_len;
+   case ETH_P_PPP_SES:
+      return process_pppoe(data_ptr, data_len, pkt) + gre_len;
+   default:
+      pkt->ip_proto = IPPROTO_GRE;
+      return 0;
+   }
+}
+
 /**
  * \brief Parse specific fields from IPv4 header.
  * \param [in] data_ptr Pointer to begin of header.
@@ -252,11 +297,21 @@ inline uint16_t parse_ipv4_hdr(const u_char *data_ptr, uint16_t data_len, Packet
       throw "Parser detected malformed packet";
    }
 
+   const int ihl = ip->ihl << 2;
+
+   if (ip->protocol == IPPROTO_GRE) {
+      DEBUG_MSG("Parse GRE in ipv4 header\n");
+      if (data_len < ihl) {
+          throw "Parser detected malformed packet";
+      }
+      return parse_gre(data_ptr + ihl, data_len - ihl, pkt) + ihl;
+   }
+
    pkt->ip_version = IP::v4;
    pkt->ip_proto = ip->protocol;
    pkt->ip_tos = ip->tos;
    pkt->ip_len = ntohs(ip->tot_len);
-   pkt->ip_payload_len = pkt->ip_len - (ip->ihl << 2);
+   pkt->ip_payload_len = pkt->ip_len - ihl;
    pkt->ip_ttl = ip->ttl;
    pkt->ip_flags = (ntohs(ip->frag_off) & 0xE000) >> 13;
    pkt->src_ip.v4 = ip->saddr;
@@ -276,7 +331,7 @@ inline uint16_t parse_ipv4_hdr(const u_char *data_ptr, uint16_t data_len, Packet
    DEBUG_MSG("\tSrc addr:\t%s\n",      inet_ntoa(*(struct in_addr *) (&ip->saddr)));
    DEBUG_MSG("\tDest addr:\t%s\n",     inet_ntoa(*(struct in_addr *) (&ip->daddr)));
 
-   return (ip->ihl << 2);
+   return ihl;
 }
 
 /**
@@ -475,54 +530,6 @@ inline uint16_t parse_udp_hdr(const u_char *data_ptr, uint16_t data_len, Packet 
 }
 
 /**
- * \brief Parse specific fields from ICMP header.
- * \param [in] data_ptr Pointer to begin of header.
- * \param [in] data_len Length of packet data in `data_ptr`.
- * \param [out] pkt Pointer to Packet structure where parsed fields will be stored.
- * \return Size of header in bytes.
- */
-inline uint16_t parse_icmp_hdr(const u_char *data_ptr, uint16_t data_len, Packet *pkt)
-{
-   struct icmphdr *icmp = (struct icmphdr *) data_ptr;
-   if (sizeof(struct icmphdr) > data_len) {
-      throw "Parser detected malformed packet";
-   }
-   pkt->dst_port = icmp->type * 256 + icmp->code;
-
-   DEBUG_MSG("ICMP header:\n");
-   DEBUG_MSG("\tType:\t\t%u\n",     icmp->type);
-   DEBUG_MSG("\tCode:\t\t%u\n",     icmp->code);
-   DEBUG_MSG("\tChecksum:\t%#06x\n",ntohs(icmp->checksum));
-   DEBUG_MSG("\tRest:\t\t%#06x\n",  ntohl(*(uint32_t *) &icmp->un));
-
-   return 0;
-}
-
-/**
- * \brief Parse specific fields from ICMPv6 header.
- * \param [in] data_ptr Pointer to begin of header.
- * \param [in] data_len Length of packet data in `data_ptr`.
- * \param [out] pkt Pointer to Packet structure where parsed fields will be stored.
- * \return Size of header in bytes.
- */
-inline uint16_t parse_icmpv6_hdr(const u_char *data_ptr, uint16_t data_len, Packet *pkt)
-{
-   struct icmp6_hdr *icmp6 = (struct icmp6_hdr *) data_ptr;
-   if (sizeof(struct icmp6_hdr) > data_len) {
-      throw "Parser detected malformed packet";
-   }
-   pkt->dst_port = icmp6->icmp6_type * 256 + icmp6->icmp6_code;
-
-   DEBUG_MSG("ICMPv6 header:\n");
-   DEBUG_MSG("\tType:\t\t%u\n",     icmp6->icmp6_type);
-   DEBUG_MSG("\tCode:\t\t%u\n",     icmp6->icmp6_code);
-   DEBUG_MSG("\tChecksum:\t%#x\n",  ntohs(icmp6->icmp6_cksum));
-   DEBUG_MSG("\tBody:\t\t%#x\n",    ntohs(*(uint32_t *) &icmp6->icmp6_dataun));
-
-   return 0;
-}
-
-/**
  * \brief Skip MPLS stack.
  * \param [in] data_ptr Pointer to begin of header.
  * \param [in] data_len Length of packet data in `data_ptr`.
@@ -696,10 +703,6 @@ void parse_packet(parser_opt_t *opt, struct timeval ts, const uint8_t *data, uin
          data_offset += parse_tcp_hdr(data + data_offset, caplen - data_offset, pkt);
       } else if (pkt->ip_proto == IPPROTO_UDP) {
          data_offset += parse_udp_hdr(data + data_offset, caplen - data_offset, pkt);
-      } else if (pkt->ip_proto == IPPROTO_ICMP) {
-         data_offset += parse_icmp_hdr(data + data_offset, caplen - data_offset, pkt);
-      } else if (pkt->ip_proto == IPPROTO_ICMPV6) {
-         data_offset += parse_icmpv6_hdr(data + data_offset, caplen - data_offset, pkt);
       }
    } catch (const char *err) {
       DEBUG_MSG("%s\n", err);

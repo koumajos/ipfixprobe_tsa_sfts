@@ -1,3 +1,94 @@
+2023-07-20 (Josef Koumar): NetTiSA: Handle NaN values
+2023-07-18 (Pavel Siska): Nettisa - fix invalid time conversion
+2023-07-18 (Pavel Siska): utils - add function that convert struct timeval to microseconds
+2023-07-18 (Pavel Siska): utils - fix static_assert function to c++11 standard
+
+2023-07-17 (Pavel Siska): NetTiSA: Add NetTiSA into README.md
+2023-07-17 (Pavel Siska): NetTiSA: Add NetTiSA to Makefile
+2023-07-17 (Pavel Siska): NetTiSA: Add NetTiSA plugin
+2023-07-17 (Pavel Siska): NetTiSA: Add NetTiSA IPFIX elements
+2023-07-17 (Pavel Siska): utils - format code with clang-format
+2023-07-17 (Pavel Siska): Byte-utils - introduce htonf() function to convert float to network order
+2023-07-14 (Karel Hynek): OVPN: Code reformat
+2023-07-14 (Karel Hynek): OVPN: checking datapackets for RTP validity to reduce false positives
+2023-07-14 (Karel Hynek): OVPN: Added rtp header validation function
+2023-07-14 (Karel Hynek): OVPN plugin: Improve detection for flows with large small number packets
+2023-07-07 (Jakub Magda): Add new HTTP fields to README.md
+2023-07-07 (Karel Hynek): HTTP: Updated functional tests
+2023-07-07 (Karel Hynek): HTTP: Added missing pointer check
+2023-07-07 (Karel Hynek): HTTP: Code reformat
+2023-07-07 (Karel Hynek): HTTP: FIXED invalid pointer check
+2023-06-28 (Karel Hynek): Changing uncrustify to clang format
+2023-06-17 (Tomas Cejka): actions: update to actions/checkout@v3
+2023-06-17 (Tomas Cejka): coverity: update to actions/checkout@v3
+2023-06-15 (Jakub Magda): Add parsing HTTP response headers server and set-cookie names
+2023-06-06 (Jakub Antoní Stigler): Update functional test references
+2023-06-01 (jaroslavpesek): dpdk - updated README.md for multiport read
+2023-05-23 (Jakub Antoní Stigler): improve readablility
+2023-04-25 (Jakub Antoní Stigler): Add icmp to README
+2023-04-25 (Jakub Antoní Stigler): remove icmp from parser
+2023-04-25 (Jakub Antoní Stigler): Implement fill functions in icmp
+2023-04-25 (Jakub Antoní Stigler): Add binaries to gitignore
+2023-04-25 (Jakub Antoní Stigler): Implement ICMP plugin
+2023-04-25 (Jakub Antoní Stigler): generate empty icmp plugin
+
+2023-05-30 (jaroslavpesek): Merge pull request #157 from CESNET/dpdk-port
+2023-05-29 (Pavel Siska): Ipfixprobed - support dpdk option `lcores`
+2023-05-29 (Pavel Siska): Ipfixprobed - remove dpdk option `cpu_mask`
+2023-05-29 (Pavel Siska): Dpdk - refactor dpdk, support multiple port read
+2023-05-29 (Pavel Siska): Dpdk - introduce DpdkDevice class
+2023-05-29 (Pavel Siska): Dpdk - introduce dpdk Mbuf wrapper class
+2023-05-26 (Tomas Cejka): Merge pull request #155 from BonnyAD9/add-vlan-to-flow-key
+2023-05-26 (Jakub Antonín Štigler): Merge branch 'CESNET:master' into add-vlan-to-flow-key
+2023-05-26 (Tomas Cejka): Merge pull request #156 from CESNET/coverity-1
+2023-05-26 (Tomas Cejka): Update coverity.yml
+2023-05-24 (Jakub Antonín Štigler): add VLAN ID to flow key
+2023-05-19 (Tomas Cejka): Merge pull request #141 from CESNET/dpdk-ring-reader
+2023-05-19 (jaroslavpesek): Apply code style suggestions from code review
+2023-05-19 (jaroslavpesek): Apply copyright suggestions from code review
+2023-05-19 (Tomas Cejka): Merge pull request #152 from CESNET/ovpn_enhacment
+2023-05-19 (Karel Hynek): Added min_pckt_export_treshold constant
+2023-05-19 (Karel Hynek): Update minor coding-style issue
+2023-05-19 (Tomas Cejka): Merge pull request #154 from CESNET/update_licence
+2023-05-19 (Karel Hynek): Update licence terms
+2023-05-17 (Tomas Cejka): Merge pull request #153 from CESNET/release
+2023-05-16 (Karel Hynek): Minor coding style update
+2023-05-16 (Karel Hynek): Minor coding style update
+2023-05-16 (Karel Hynek): SSA: Updated readme
+2023-05-16 (Karel Hynek): SSADetector: Bugfix, improved memory consumption
+2023-05-16 (Karel Hynek): Enhancment, do not export bstats for short flows
+2023-05-16 (Karel Hynek): Merge pull request #149 from CESNET/ssadetector_plugin
+2023-05-16 (Karel Hynek): Merge pull request #151 from CESNET/bstats_enhancment
+2023-05-16 (Karel Hynek): Minor coding style update
+2023-05-16 (Karel Hynek): Minor coding style update
+2023-05-05 (Karel Hynek): SSA: Updated readme
+2023-05-05 (Karel Hynek): SSADetector: Bugfix, improved memory consumption
+2023-05-05 (Karel Hynek): Ovpn: added updated test reference
+2023-05-05 (Karel Hynek): Enhancment, do not export bstats for short flows
+2023-05-05 (Karel Hynek): Enhancment: Do not export ovpn field for short flows.
+2023-05-05 (Karel Hynek): Enhancment: Contrain ovpn data packet on minimal size
+2023-03-27 (jaroslavpesek): dpdk: new input plugin for reading via dpdk rings as secondary dpdk process
+
+2023-05-05 (SiskaPavel): Merge pull request #148 from CESNET/dpdk-version
+2023-05-05 (Pavel Siska): dpdk - support HW timestamp only when metadata are available
+2023-05-04 (Pavel Siska): Dpdk - support different constant names acros dpdk versions
+2023-04-18 (SiskaPavel): Merge pull request #146 from CESNET/ssadetector_plugin
+2023-04-18 (SiskaPavel): Merge pull request #143 from BonnyAD9/http-invalid-method
+2023-04-18 (Karel Hynek): Merge pull request #145 from CESNET/pstats_zerolen_fix
+2023-04-18 (Karel Hynek): SSADetector: Updated coding style, Removed unnamed constants
+2023-04-17 (Karel Hynek): PSTATS BUGFIX: Fixed zero-len packets recognition
+2023-04-04 (Jakub Antonín Štigler): Increase the method field size in http
+2023-03-27 (Jakub Antonín Štigler): Set back the default size of http method
+2023-03-27 (Jakub Antonín Štigler): parse http requests with invalid header
+2023-03-27 (SiskaPavel): Merge pull request #142 from CESNET/new_version
+2023-03-15 (Karel Hynek): SSADetector: Added functional tests
+2023-03-15 (Karel Hynek): SSADetector: Added ext record modification methods
+2023-03-15 (Karel Hynek): SSADetector: Added transition functions to detection automaton
+2023-03-15 (Karel Hynek): SSADetector: SSADetectorRecord EXT completely defined
+2023-03-15 (Karel Hynek): SSADetector: Added pkt table structure
+2023-03-15 (Karel Hynek): SSADetector: Added pkt entry structure
+2023-03-15 (jirakja7): SSADetector plugin: initial files.
+
 2023-03-20 (Jakub Antonín Štigler): Skip ipv6 mobility header
 2023-03-15 (Karel Hynek): Updated .gitignore
 2023-03-13 (Karel Hynek): tls: Updated tls test reference
